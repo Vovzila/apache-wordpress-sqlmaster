@@ -26,6 +26,7 @@ mkdir /mnt/windir
 cp /home/vovzila/apache-wordpress-sqlmaster/realmd.conf /etc/realmd.conf
 echo raMMste1321 | realm join -U vovzila bis.vrn.ru
 mount.cifs //192.168.100.3/"Общая шара" /mnt/windir -o username=vovzila,password=raMMste1321
-chmod 755 /home/vovzila/apache-wordpress-sqlmaster/cronboot.txt
-cp /home/vovzila/apache-wordpress-sqlmaster/vovzila.txt /var/spool/cron/crontabs/vovzila
+chmod 755 /home/vovzila/apache-wordpress-sqlmaster/cronboot
+cp /home/vovzila/apache-wordpress-sqlmaster/vovzila /var/spool/cron/crontabs/vovzila
+chmod 755 /var/spool/cron/crontabs/vovzila
 chmod 755 /home/vovzila/apache-wordpress-sqlmaster/site_changes
