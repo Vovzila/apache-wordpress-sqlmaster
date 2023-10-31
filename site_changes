@@ -1,0 +1,2 @@
+tar -cvzf /home/vovzila/html.gz /var/www/html/
+cp /home/vovzila/html.gz /mnt/windir/project/html.gz

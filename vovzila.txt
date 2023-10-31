@@ -25,3 +25,4 @@
 # 
 # m h  dom mon dow   command
 @reboot /home/vovzila/apache-wordpress-sqlmaster/cronboot
+@hourly /home/vovzila/apache-wordpress-sqlmaster/site_changes
