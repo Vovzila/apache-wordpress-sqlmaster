@@ -1,0 +1,32 @@
+git config --global user.name Vovzila
+#email git
+git config --global user.email vovzila@mail.ru
+git clone https://vovzila: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@github.com/Vovzila/apache-wordpress-sqlmaster.git
+mysql -e "ALTER USER 'root'@'%' IDENTIFIED BY 'raMMste1321';"
+mysql -e "CREATE DATABASE wordpress;"
+mysql -e "CREATE USER 'wordpressuser'@'%' IDENTIFIED BY 'Testpassword&1'"
+mysql -e "GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpressuser'@'%';"
+mysql -e "FLUSH PRIVILEGES;"
+cp /home/vovzila/apache-wordpress-sqlmaster/mysqld.cnf /etc/mysql/mysql.conf.d//mysqld.cnf
+systemctl restart mysql
+mkdir /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/
+tar -xvf /home/vovzila/apache-wordpress-sqlmaster/sqlbackup.gz -C /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/
+cat /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/home/vovzila/backup/*.bkp | mysql -u root -praMMste1321 wordpress
+rm -r /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/
+mkdir /home/vovzila/apache-wordpress-sqlmaster/html/
+tar -xvf /home/vovzila/apache-wordpress-sqlmaster/html.gz -C /home/vovzila/apache-wordpress-sqlmaster/html/
+rsync -avP /home/vovzila/apache-wordpress-sqlmaster/html/var/www/html /var/www/
+rm -r /home/vovzila/apache-wordpress-sqlmaster/html/
+cd /var/www/html/
+chown -R www-data:www-data /var/www/html/
+chmod -R 755 /var/www/html/
+rm index.html
+cp /home/vovzila/apache-wordpress-sqlmaster/timesyncd.conf /etc/systemd/timesyncd.conf
+systemctl restart systemd-timesyncd
+mkdir /mnt/windir
+cp /home/vovzila/apache-wordpress-sqlmaster/realmd.conf /etc/realmd.conf
+echo raMMste1321 | realm join -U vovzila bis.vrn.ru
+mount.cifs //192.168.100.3/"Общая шара" /mnt/windir -o username=vovzila,password=raMMste1321
+chmod 755 /home/vovzila/apache-wordpress-sqlmaster/cronboot
+cp /home/vovzila/apache-wordpress-sqlmaster/vovzila /var/spool/cron/crontabs/vovzila
+chmod 755 /home/vovzila/apache-wordpress-sqlmaster/site_changes
