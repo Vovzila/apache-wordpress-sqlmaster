@@ -4,6 +4,10 @@ git clone https://vovzila:github_pat_11BDC6XUQ0Anp8HpwPum1g_ehFtSoSEO1kqa54ugs1L
 wait
 mysql -e "ALTER USER 'root'@'%' IDENTIFIED BY 'raMMste1321';"
 wait
+mysql -e "CREATE USER replica@'%' IDENTIFIED WITH 'caching_sha2_password' BY 'replicA&20';"
+wait
+mysql -e "GRANT REPLICATION SLAVE ON *.* TO replica@'%';"
+wait
 mysql -e "CREATE DATABASE wordpress;"
 wait
 mysql -e "CREATE USER 'wordpressuser'@'%' IDENTIFIED BY 'Testpassword&1'"
