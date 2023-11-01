@@ -1,41 +1,64 @@
 git config --global user.name Vovzila
 git config --global user.email vovzila@mail.ru
 git clone https://vovzila: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@github.com/Vovzila/apache-wordpress-sqlmaster.git
+wait
 mysql -e "ALTER USER 'root'@'%' IDENTIFIED BY 'raMMste1321';"
+wait
 mysql -e "CREATE DATABASE wordpress;"
+wait
 mysql -e "CREATE USER 'wordpressuser'@'%' IDENTIFIED BY 'Testpassword&1'"
+wait
 mysql -e "GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpressuser'@'%';"
+wait
 mysql -e "FLUSH PRIVILEGES;"
+wait
 cp /home/vovzila/apache-wordpress-sqlmaster/mysqld.cnf /etc/mysql/mysql.conf.d//mysqld.cnf
+wait
 systemctl restart mysql
 mkdir /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/
+wait
 tar -xvf /home/vovzila/apache-wordpress-sqlmaster/sqlbackup.gz -C /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/
+wait
 cat /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/home/vovzila/backup/*.bkp | mysql -u root -praMMste1321 wordpress
+wait
 rm -r /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/
 mkdir /home/vovzila/apache-wordpress-sqlmaster/html/
+wait
 tar -xvf /home/vovzila/apache-wordpress-sqlmaster/html.gz -C /home/vovzila/apache-wordpress-sqlmaster/html/
+wait
 rsync -avP /home/vovzila/apache-wordpress-sqlmaster/html/var/www/html /var/www/
+wait
 rm -r /home/vovzila/apache-wordpress-sqlmaster/html/
 cd /var/www/html/
 chown -R www-data:www-data /var/www/html/
 chmod -R 755 /var/www/html/
 rm index.html
 cp /home/vovzila/apache-wordpress-sqlmaster/timesyncd.conf /etc/systemd/timesyncd.conf
+wait
 systemctl restart systemd-timesyncd
 mkdir /mnt/windir
 cp /home/vovzila/apache-wordpress-sqlmaster/realmd.conf /etc/realmd.conf
 echo ubuntu1321 | realm join -U ubuntu bis.vrn.ru
+wait
 mount.cifs //192.168.100.3/"Общая шара" /mnt/windir -o username=ubuntu,password=ubuntu321
+wait
 chmod 755 /home/vovzila/apache-wordpress-sqlmaster/cronboot
 cp /home/vovzila/apache-wordpress-sqlmaster/vovzila /var/spool/cron/crontabs/vovzila
+wait
 chmod 755 /var/spool/cron/crontabs/vovzila
 chmod 755 /home/vovzila/apache-wordpress-sqlmaster/site_changes
 cd /home/vovzila/
-cp /mnt/project/node_exporter-1.6.1.linux-amd64.tar.gz /home/vovzila/node_exporter-1.6.1.linux-amd64.tar.gz
+wait
+cp /mnt/windir/project/node_exporter-1.6.1.linux-amd64.tar.gz /home/vovzila/node_exporter-1.6.1.linux-amd64.tar.gz
+wait
+tar xzvf node_exporter-*.t*gz
+wait
 useradd --no-create-home --shell /bin/false node_exporter
 cp node_exporter-*.linux-amd64/node_exporter /usr/local/bin
+wait
 chown node_exporter: /usr/local/bin/node_exporter
-cp node_exporter.service /etc/systemd/system/node_exporter.service
+cp /home/vovzila/apache-wordpress-sqlmaster/node_exporter.service /etc/systemd/system/node_exporter.service
+wait
 systemctl daemon-reload
 systemctl start node_exporter
 systemctl enable node_exporter
