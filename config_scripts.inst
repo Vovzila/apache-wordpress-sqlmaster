@@ -45,9 +45,8 @@ mount.cifs //192.168.100.3/"Общая шара" /mnt/windir -o username=ubuntu,
 wait
 sleep 10
 chmod 755 /home/vovzila/apache-wordpress-sqlmaster/cronboot
-cp /home/vovzila/apache-wordpress-sqlmaster/vovzila /var/spool/cron/crontabs/vovzila
+cp /home/vovzila/apache-wordpress-sqlmaster/root /var/spool/cron/crontabs/root
 wait
-chmod 755 /var/spool/cron/crontabs/vovzila
 chmod 755 /home/vovzila/apache-wordpress-sqlmaster/site_changes
 cd /home/vovzila/
 wait
