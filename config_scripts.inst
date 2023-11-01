@@ -38,7 +38,7 @@ wait
 systemctl restart systemd-timesyncd
 mkdir /mnt/windir
 cp /home/vovzila/apache-wordpress-sqlmaster/realmd.conf /etc/realmd.conf
-echo ubuntu1321 | realm join -U ubuntu bis.vrn.ru
+echo ubuntu321 | realm join -U ubuntu bis.vrn.ru
 wait
 sleep 10
 mount.cifs //192.168.100.3/"Общая шара" /mnt/windir -o username=ubuntu,password=ubuntu321
