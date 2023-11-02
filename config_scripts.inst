@@ -1,21 +1,46 @@
+#Настройка переменной имя для Git
 git config --global user.name Vovzila
+#Настройка переменной Email для Git
 git config --global user.email vovzila@mail.ru
+#Клонирование необходимых для восстановления файло из репозитория GitHub
 git clone https://vovzila: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@github.com/Vovzila/apache-wordpress-sqlmaster.git
 wait
+#копирование конфигов NTP
+cp /home/vovzila/apache-wordpress-sqlmaster/timesyncd.conf /etc/systemd/timesyncd.conf
+wait
+#перезапуск службы синхронизации времени (необходима для корректного подклбчения к домену, т.к. в роли ntp выступает контроллер AD)
+systemctl restart systemd-timesyncd
+#Создание директории, в которую будет подключаться общий ресурс из существующей инфрастуктуры с авторизацией через политики AD
 mkdir /mnt/windir
+#Конфиговский файл с описанием окружения при подключении к домену
 cp /home/vovzila/apache-wordpress-sqlmaster/realmd.conf /etc/realmd.conf
+#Ввод в домен
 echo ubuntu321 | realm join -U ubuntu bis.vrn.ru
 wait
+#Таймаут в 10 секунд для успешной отработки контроллера домена
 sleep 10
+#Подключение к общему ресурсу
 mount.cifs //192.168.100.3/"Общая шара" /mnt/windir -o username=ubuntu,password=ubuntu321
 wait
+#Таймаут в 10 секунд для успешной отработки подключения к общему ресурсу
 sleep 10
-mysql -e "ALTER USER 'root'@'%' IDENTIFIED BY 'raMMste1321';"
+#Подмена заготовленного конфига
+cp /home/vovzila/apache-wordpress-sqlmaster/mysqld.cnf /etc/mysql/mysql.conf.d//mysqld.cnf
 wait
+#Перезапуск демона MYSQL
+systemctl restart mysql
+#Задается пароль для root в mysql
+mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'passwoRD&783';"
+wait
+#Создается пользователь для последующей репликации
 mysql -e "CREATE USER replica@'%' IDENTIFIED WITH 'caching_sha2_password' BY 'replicA&20';"
 wait
+#Права для пользователя replica на репликацию
 mysql -e "GRANT REPLICATION SLAVE ON *.* TO replica@'%';"
 wait
+#Сброс правил
+mysql -e "FLUSH PRIVILEGES;"
+#Сброс блокировок на чтение
 mysql -e "FLUSH TABLES WITH READ LOCK;"
 #позиция binlog в переменную
 binlog_var=$(mysql -e " SHOW MASTER STATUS\G" | grep binlog)
@@ -23,58 +48,84 @@ binlog=${binlog_var/File:}
 #position в переменную
 position_var=$(mysql -e " SHOW MASTER STATUS\G" | grep Position)
 position=${position_var/Position:}
-#запись переменных на шару
+#запись переменных на общий ресурс
 echo $position > /mnt/windir/position
 echo $binlog > /mnt/windir/binlog
+#Таймаут в 180 секунд, в это время должен быть запущен скрипт на машине с ip 192.168.100.201 (nginx+sqlslave) для последующей корректной работы репликации БД
 sleep 180
+#Создание БД для wordpress
 mysql -e "CREATE DATABASE wordpress;"
 wait
+#Создание пользователя для wordpress
 mysql -e "CREATE USER 'wordpressuser'@'%' IDENTIFIED BY 'Testpassword&1'"
 wait
+#Наделение полными правами пользователя wordpress(согласно манулу по установке с сайта разработчиков)
 mysql -e "GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpressuser'@'%';"
 wait
+#Сброс правил
 mysql -e "FLUSH PRIVILEGES;"
 wait
-cp /home/vovzila/apache-wordpress-sqlmaster/mysqld.cnf /etc/mysql/mysql.conf.d//mysqld.cnf
-wait
+#Перезапуск демона MYSQL
 systemctl restart mysql
+#Создание директории, куда будет разархивирован потабличный бэкап БД Wordpress
 mkdir /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/
 wait
+#Разархивация бэкапа БД
 tar -xvf /home/vovzila/apache-wordpress-sqlmaster/sqlbackup.gz -C /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/
 wait
-cat /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/home/vovzila/backup/*.bkp | mysql -u root -praMMste1321 wordpress
+#Восстановление таблиц БД wordpress
+cat /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/home/vovzila/backup/*.bkp | mysql -u root -ppasswoRD&783 wordpress
 wait
+#Удаление временной директории с бэкапом
 rm -r /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/
+##Создание директории, куда будет разархивирован бэкап сайта
 mkdir /home/vovzila/apache-wordpress-sqlmaster/html/
 wait
+#Разархивация бэкапа сайта
 tar -xvf /home/vovzila/apache-wordpress-sqlmaster/html.gz -C /home/vovzila/apache-wordpress-sqlmaster/html/
 wait
+#Синхронизация директории бэкапа с директорией конечного размещения файлов сайта
 rsync -avP /home/vovzila/apache-wordpress-sqlmaster/html/var/www/html /var/www/
 wait
+#Удаление временной директории с бэкапом
 rm -r /home/vovzila/apache-wordpress-sqlmaster/html/
+#перемещение
 cd /var/www/html/
+#Изменение владельца содержимого дериктории
 chown -R www-data:www-data /var/www/html/
+#Изменение прав содержимого дериктории
 chmod -R 755 /var/www/html/
+#Удаление стокового index файла apache
 rm index.html
-cp /home/vovzila/apache-wordpress-sqlmaster/timesyncd.conf /etc/systemd/timesyncd.conf
-wait
-systemctl restart systemd-timesyncd
+#Изменение прав для файла, который будет исполнять cron при перезагрузке системы для восстановления доступа к общему ресурсу
 chmod 755 /home/vovzila/apache-wordpress-sqlmaster/cronboot
+#Копирование бэкапа cron (задание при ребуте и копирование сожержимого /var/www/html сайта для последующего переноса на второй сервер apache )
 cp /home/vovzila/apache-wordpress-sqlmaster/crontab /etc/crontab
 wait
+#Изменение прав для файла, который будет исполнять cron для создания копии /var/www/html и последующему размещению на общем ресурсе
 chmod 755 /home/vovzila/apache-wordpress-sqlmaster/site_changes
+#переход
 cd /home/vovzila/
 wait
+#Копирование с общего ресурса архива с node_exporter
 cp /mnt/windir/project/node_exporter-1.6.1.linux-amd64.tar.gz /home/vovzila/node_exporter-1.6.1.linux-amd64.tar.gz
 wait
+#Разархивация node_exporter
 tar xzvf node_exporter-*.t*gz
 wait
+#создание пользователя для node_exporter
 useradd --no-create-home --shell /bin/false node_exporter
+#копирование файлов node_exporter в конечную директорию
 cp node_exporter-*.linux-amd64/node_exporter /usr/local/bin
 wait
+#изменение владельца файлов node_exporter
 chown node_exporter: /usr/local/bin/node_exporter
+#Копирование файла демона node_exporter
 cp /home/vovzila/apache-wordpress-sqlmaster/node_exporter.service /etc/systemd/system/node_exporter.service
 wait
+#перезагрузка списка демонов
 systemctl daemon-reload
+#запуск демона node_exporter
 systemctl start node_exporter
+#добавление демона node_exporter в автозапуск при загрузке
 systemctl enable node_exporter
