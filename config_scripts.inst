@@ -26,7 +26,7 @@ position=${position_var/Position:}
 #запись переменных на шару
 echo $position > /mnt/windir/position
 echo $binlog > /mnt/windir/binlog
-sleep 120
+sleep 180
 mysql -e "CREATE DATABASE wordpress;"
 wait
 mysql -e "CREATE USER 'wordpressuser'@'%' IDENTIFIED BY 'Testpassword&1'"
@@ -60,7 +60,7 @@ cp /home/vovzila/apache-wordpress-sqlmaster/timesyncd.conf /etc/systemd/timesync
 wait
 systemctl restart systemd-timesyncd
 chmod 755 /home/vovzila/apache-wordpress-sqlmaster/cronboot
-cp /home/vovzila/apache-wordpress-sqlmaster/root /var/spool/cron/crontabs/root
+cp /home/vovzila/apache-wordpress-sqlmaster/crontab /etc/crontab
 wait
 chmod 755 /home/vovzila/apache-wordpress-sqlmaster/site_changes
 cd /home/vovzila/
