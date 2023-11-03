@@ -129,3 +129,11 @@ systemctl daemon-reload
 systemctl start node_exporter
 #добавление демона node_exporter в автозапуск при загрузке
 systemctl enable node_exporter
+#Установка пакета filebeat
+dpkg -i /mnt/windir/project/filebeat-8.9.1-amd64.deb
+#настройки filebeat
+cp /home/vovzila/nginx-sql_slave/filebeat.yml /etc/filebeat/filebeat.yml
+#filebeat в автозагрузку
+systemctl enable filebeat
+#перезапуск filebeat
+systemctl restart filebeat
