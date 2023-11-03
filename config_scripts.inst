@@ -131,8 +131,10 @@ systemctl start node_exporter
 systemctl enable node_exporter
 #Установка пакета filebeat
 dpkg -i /mnt/windir/project/filebeat-8.9.1-amd64.deb
+wait
 #настройки filebeat
-cp /home/vovzila/nginx-sql_slave/filebeat.yml /etc/filebeat/filebeat.yml
+cp /home/vovzila/apache-wordpress-sqlmaster/filebeat.yml /etc/filebeat/filebeat.yml
+wait
 #filebeat в автозагрузку
 systemctl enable filebeat
 #перезапуск filebeat
