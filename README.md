@@ -1,5 +1,5 @@
 # apache-wordpress-sqlmaster
-preinstal_scripts.inst Скрипты, выполняемые для установки окружения, до защиты
+preinstal_scripts.inst Скрипты, выполняемые для установки окружения, до защиты<br />
 config_scripts.inst Скрипты выполняемые на защите
 cronboot Скрипт для подключения шары через учетную запись AD
 crontab Конфиг crontab
