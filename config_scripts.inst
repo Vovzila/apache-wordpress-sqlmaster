@@ -74,7 +74,7 @@ wait
 tar -xvf /home/vovzila/apache-wordpress-sqlmaster/sqlbackup.gz -C /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/
 wait
 #Восстановление таблиц БД wordpress
-cat /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/home/vovzila/backup/*.bkp | mysql wordpress
+cat /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/home/vovzila/1/*.bkp | mysql wordpress
 wait
 #Удаление временной директории с бэкапом
 rm -r /home/vovzila/apache-wordpress-sqlmaster/sqlbackup/
